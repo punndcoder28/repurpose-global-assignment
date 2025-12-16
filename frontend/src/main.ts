@@ -6,14 +6,25 @@ import router from './router'
 
 import './assets/main.css'
 
-
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
+import { ApolloClient, createHttpLink, InMemoryCache, from } from '@apollo/client/core'
+import { setContext } from '@apollo/client/link/context'
 import { DefaultApolloClient } from '@vue/apollo-composable'
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: 'http://localhost:3200/graphql',
+  uri: 'http://localhost:3200/graphql'
+})
+
+// Auth link to add JWT token to headers
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('auth_token')
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ''
+    }
+  }
 })
 
 // Cache implementation
@@ -21,11 +32,14 @@ const cache = new InMemoryCache({
   resultCaching: false
 })
 
-// Create the apollo client
+// Create the apollo client with auth link
 const apolloClient = new ApolloClient({
-  link: httpLink,
-  cache,
+  link: from([authLink, httpLink]),
+  cache
 })
+
+// Export apollo client for use in stores
+export { apolloClient }
 
 const app = createApp({
   setup() {
