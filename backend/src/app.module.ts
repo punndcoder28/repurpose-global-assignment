@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HelloWorldResolver } from './hello-world/hello-world.resolver';
-import { HelloWorldService } from './hello-world/hello-world.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
@@ -35,11 +31,7 @@ import { join } from 'path';
     UsersModule,
     AuthModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
-    HelloWorldResolver,
-    HelloWorldService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
