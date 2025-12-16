@@ -1,0 +1,17 @@
+pre-commit:
+  parallel: true
+  commands:
+    frontend-prettier:
+      glob: "frontend/**/*.{js,jsx,ts,tsx,vue,json,css,scss,md}"
+      root: "frontend/"
+      run: yarn prettier --write {staged_files} && git add {staged_files}
+    frontend-eslint:
+      glob: "frontend/**/*.{js,jsx,ts,tsx,vue}"
+      root: "frontend/"
+      run: yarn eslint {staged_files} --fix && git add {staged_files}
+
+pre-push:
+  commands:
+    backend-tests:
+      root: "backend/"
+      run: yarn test
