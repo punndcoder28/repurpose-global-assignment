@@ -1,0 +1,8 @@
+{
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/node_modules": true
+  },
+  "typescript.preferences.useAliasesForRenames": false,
+  "typescript.suggest.autoImports": true
+}
