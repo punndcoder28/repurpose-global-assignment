@@ -7,8 +7,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: []
-  postCreated: []
+  (e: 'close'): void
+  (e: 'postCreated'): void
 }>()
 
 const postsStore = usePostsStore()

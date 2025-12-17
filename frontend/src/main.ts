@@ -13,19 +13,27 @@ import { DefaultApolloClient } from '@vue/apollo-composable'
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
-  // You should use an absolute URL here
-  uri: 'http://localhost:3200/graphql'
+  // Use runtime config from env-config.js, fallback to env var, then localhost
+  uri:
+    (window as any).ENV?.VITE_API_URL ||
+    import.meta.env.VITE_API_URL ||
+    'http://localhost:3200/graphql'
 })
 
 // Error link to handle errors
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path, extensions }) => {
       console.log(locations)
       console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
 
-      // Handle unauthorized errors
-      if (extensions?.code === 'UNAUTHENTICATED' || message.includes('Unauthorized')) {
+      // Handle unauthorized errors, but NOT for login/register mutations
+      const isAuthMutation =
+        operation.operationName === 'Login' || operation.operationName === 'Register'
+      if (
+        (extensions?.code === 'UNAUTHENTICATED' || message.includes('Unauthorized')) &&
+        !isAuthMutation
+      ) {
         console.error('Authentication error - redirecting to login')
         sessionStorage.removeItem('auth_token')
         sessionStorage.removeItem('auth_user')

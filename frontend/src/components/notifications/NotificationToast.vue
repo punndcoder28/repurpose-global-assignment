@@ -11,7 +11,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  dismiss: [id: number]
+  (e: 'dismiss', id: number): void
 }>()
 </script>
 
