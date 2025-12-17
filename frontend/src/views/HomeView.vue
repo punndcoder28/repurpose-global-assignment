@@ -50,7 +50,7 @@ onMounted(() => {
 
   if (authStore.user?.id) {
     // Start polling every 5 seconds
-    postsStore.startPolling(authStore.user.id, 5000)
+    postsStore.startPolling(authStore.user.id, 2000)
   } else {
     console.error('Cannot start polling: user ID not available')
   }
