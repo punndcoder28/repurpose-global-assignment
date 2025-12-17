@@ -70,6 +70,9 @@ export class PostsResolver {
   }
 
   private toPostType(post: Post): PostType {
+    if (!post) {
+      return null;
+    }
     return {
       id: post.id,
       title: post.title,

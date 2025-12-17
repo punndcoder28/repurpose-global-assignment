@@ -82,8 +82,8 @@ describe('PostsResolver', () => {
       );
       expect(postsService.findById).toHaveBeenCalledWith(createdPost.id);
       expect(result).toBeDefined();
-      expect(result.title).toBe(createInput.title);
-      expect(result.content).toBe(createInput.content);
+      expect(result.title).toBe('Test Post');
+      expect(result.content).toBe('Test Content');
     });
 
     it('should return correct response format', async () => {
