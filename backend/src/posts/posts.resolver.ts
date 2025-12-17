@@ -24,8 +24,9 @@ export class PostsResolver {
 
     // Fetch the post with author relation to return complete data
     const postWithAuthor = await this.postsService.findById(post.id);
+    const result = this.toPostType(postWithAuthor);
 
-    return this.toPostType(postWithAuthor);
+    return result;
   }
 
   @Mutation(() => PostType)

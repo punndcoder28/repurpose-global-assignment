@@ -27,8 +27,8 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       // Handle unauthorized errors
       if (extensions?.code === 'UNAUTHENTICATED' || message.includes('Unauthorized')) {
         console.error('Authentication error - redirecting to login')
-        localStorage.removeItem('auth_token')
-        localStorage.removeItem('auth_user')
+        sessionStorage.removeItem('auth_token')
+        sessionStorage.removeItem('auth_user')
         window.location.href = '/auth'
       }
     })
@@ -41,7 +41,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 // Auth link to add JWT token to headers
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('auth_token')
+  const token = sessionStorage.getItem('auth_token')
   return {
     headers: {
       ...headers,
@@ -55,7 +55,7 @@ const cache = new InMemoryCache({
   resultCaching: false
 })
 
-// Create the apollo client with error handling and auth link
+// Create the apollo client with HTTP link only (no WebSockets)
 const apolloClient = new ApolloClient({
   link: from([errorLink, authLink, httpLink]),
   cache

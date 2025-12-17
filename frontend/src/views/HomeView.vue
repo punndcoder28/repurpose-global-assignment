@@ -1,9 +1,71 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import PostsList from '../components/posts/PostsList.vue'
 import CreatePostSheet from '../components/posts/CreatePostSheet.vue'
+import NotificationToast from '../components/notifications/NotificationToast.vue'
+import { useAuthStore } from '../stores/auth'
+import { usePostsStore } from '../stores/posts'
+import type { PostType } from '../types/post'
 
+const authStore = useAuthStore()
+const postsStore = usePostsStore()
 const isSheetOpen = ref(false)
+
+interface Notification {
+  id: number
+  author: string
+  title: string
+  postId: number
+}
+
+const notifications = ref<Notification[]>([])
+
+// Listen for new post events from the store's polling mechanism
+const handleNewPost = (event: Event) => {
+  const customEvent = event as CustomEvent<PostType>
+  const newPost = customEvent.detail
+
+  console.log('New post event received in HomeView:', newPost.title, 'by', newPost.author.email)
+
+  // Show notification
+  const notification: Notification = {
+    id: Date.now(),
+    author: newPost.author.email,
+    title: newPost.title,
+    postId: newPost.id
+  }
+
+  notifications.value.push(notification)
+
+  // Auto-dismiss after 5 seconds
+  setTimeout(() => {
+    dismissNotification(notification.id)
+  }, 5000)
+}
+
+// Start polling when component mounts
+onMounted(() => {
+  console.log('HomeView mounted, starting polling')
+  window.addEventListener('newPost', handleNewPost)
+
+  if (authStore.user?.id) {
+    // Start polling every 5 seconds
+    postsStore.startPolling(authStore.user.id, 5000)
+  } else {
+    console.error('Cannot start polling: user ID not available')
+  }
+})
+
+// Stop polling when component unmounts
+onUnmounted(() => {
+  console.log('HomeView unmounting, stopping polling')
+  window.removeEventListener('newPost', handleNewPost)
+  postsStore.stopPolling()
+})
+
+const dismissNotification = (id: number) => {
+  notifications.value = notifications.value.filter((n) => n.id !== id)
+}
 
 const openCreateSheet = () => {
   isSheetOpen.value = true
@@ -15,7 +77,6 @@ const closeCreateSheet = () => {
 
 const handlePostCreated = () => {
   // Post is already added to the store, just close the sheet
-  // You could add a toast notification here if desired
   console.log('Post created successfully!')
 }
 </script>
@@ -41,6 +102,9 @@ const handlePostCreated = () => {
       @close="closeCreateSheet"
       @post-created="handlePostCreated"
     />
+
+    <!-- Notification Toasts -->
+    <NotificationToast :notifications="notifications" @dismiss="dismissNotification" />
   </main>
 </template>
 

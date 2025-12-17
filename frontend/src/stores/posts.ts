@@ -45,6 +45,7 @@ export const usePostsStore = defineStore('posts', () => {
   const isLoading = ref<boolean>(false)
   const isCreating = ref<boolean>(false)
   const error = ref<string | null>(null)
+  let pollingInterval: number | null = null
 
   const hasPosts = computed(() => posts.value.length > 0)
 
@@ -70,6 +71,57 @@ export const usePostsStore = defineStore('posts', () => {
       console.error('Error fetching posts:', err)
     } finally {
       isLoading.value = false
+    }
+  }
+
+  async function pollForNewPosts(currentUserId: number): Promise<void> {
+    try {
+      const previousPostIds = new Set(posts.value.map((p) => p.id))
+
+      const result = await apolloClient.query<{ posts: PostType[] }>({
+        query: POSTS_QUERY,
+        fetchPolicy: 'network-only'
+      })
+
+      if (result.data?.posts) {
+        // Find new posts that weren't in the previous list
+        const newPosts = result.data.posts.filter((p) => !previousPostIds.has(p.id))
+
+        // Filter out posts created by the current user
+        const postsToNotify = newPosts.filter((p) => p.author.id !== currentUserId)
+
+        // Emit custom events for each new post (for notifications)
+        postsToNotify.forEach((post) => {
+          console.log('New post detected from polling:', post.title, 'by', post.author.email)
+          window.dispatchEvent(new CustomEvent('newPost', { detail: post }))
+        })
+
+        // Update the posts list
+        posts.value = result.data.posts
+      }
+    } catch (err: any) {
+      console.error('Error polling for new posts:', err)
+      // Don't set error state during polling to avoid disrupting the UI
+    }
+  }
+
+  function startPolling(currentUserId: number, intervalMs: number = 5000): void {
+    if (pollingInterval) {
+      console.log('Polling already started')
+      return
+    }
+
+    console.log(`Starting polling every ${intervalMs}ms for user ${currentUserId}`)
+    pollingInterval = window.setInterval(() => {
+      pollForNewPosts(currentUserId)
+    }, intervalMs)
+  }
+
+  function stopPolling(): void {
+    if (pollingInterval) {
+      console.log('Stopping polling')
+      clearInterval(pollingInterval)
+      pollingInterval = null
     }
   }
 
@@ -117,6 +169,8 @@ export const usePostsStore = defineStore('posts', () => {
     hasPosts,
     fetchPosts,
     createPost,
-    clearError
+    clearError,
+    startPolling,
+    stopPolling
   }
 })

@@ -42,8 +42,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value && !!user.value)
 
   function initializeAuth(): void {
-    const storedToken = localStorage.getItem(TOKEN_KEY)
-    const storedUser = localStorage.getItem(USER_KEY)
+    const storedToken = sessionStorage.getItem(TOKEN_KEY)
+    const storedUser = sessionStorage.getItem(USER_KEY)
 
     if (storedToken && storedUser) {
       token.value = storedToken
@@ -59,15 +59,15 @@ export const useAuthStore = defineStore('auth', () => {
   function saveAuth(authResponse: AuthResponse): void {
     token.value = authResponse.token
     user.value = authResponse.user
-    localStorage.setItem(TOKEN_KEY, authResponse.token)
-    localStorage.setItem(USER_KEY, JSON.stringify(authResponse.user))
+    sessionStorage.setItem(TOKEN_KEY, authResponse.token)
+    sessionStorage.setItem(USER_KEY, JSON.stringify(authResponse.user))
   }
 
   function clearAuth(): void {
     token.value = null
     user.value = null
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(USER_KEY)
+    sessionStorage.removeItem(TOKEN_KEY)
+    sessionStorage.removeItem(USER_KEY)
   }
 
   async function login(email: string, password: string): Promise<void> {

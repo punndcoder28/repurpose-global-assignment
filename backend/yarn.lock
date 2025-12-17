@@ -3090,6 +3090,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^4.0.0"
     express: "npm:^5.0.0"
     graphql: "npm:^16.6.0"
+    graphql-subscriptions: "npm:^3.0.0"
     jest: "npm:29.3.1"
     passport: "npm:^0.7.0"
     passport-jwt: "npm:^4.0.1"
@@ -4826,6 +4827,15 @@ __metadata:
   version: 1.4.0
   resolution: "graphemer@npm:1.4.0"
   checksum: 10c0/e951259d8cd2e0d196c72ec711add7115d42eb9a8146c8eeda5b8d3ac91e5dd816b9cd68920726d9fd4490368e7ed86e9c423f40db87e2d8dfafa00fa17c3a31
+  languageName: node
+  linkType: hard
+
+"graphql-subscriptions@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "graphql-subscriptions@npm:3.0.0"
+  peerDependencies:
+    graphql: ^15.7.2 || ^16.0.0
+  checksum: 10c0/10445c0d376773d15c887237ac460226b03e0b9c76789846f9133e3cfba6275b529f946634cd5a4e1f1f6c728b960714c8efc6c504af20ab05a3a1219ac9cc09
   languageName: node
   linkType: hard
 
