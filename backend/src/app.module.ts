@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { PostsModule } from './posts/posts.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { User } from './users/entities/user.entity';
 import { Post } from './posts/entities/post.entity';
@@ -30,6 +31,7 @@ import { join } from 'path';
     }),
     UsersModule,
     AuthModule,
+    PostsModule,
   ],
   providers: [
     {

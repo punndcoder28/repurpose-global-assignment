@@ -2,10 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type HelloWorldModel {
-  value: String!
-}
-
 type UserType {
   id: Int!
   email: String!
@@ -23,13 +19,25 @@ type AuthResponse {
   user: UserType!
 }
 
+type PostType {
+  id: Int!
+  title: String!
+  content: String!
+  author: UserType!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type Query {
-  sayHello: HelloWorldModel!
+  posts: [PostType!]!
+  post(id: Int!): PostType!
 }
 
 type Mutation {
   register(input: RegisterInput!): AuthResponse!
   login(input: LoginInput!): AuthResponse!
+  createPost(input: CreatePostInput!): PostType!
+  updatePost(input: UpdatePostInput!): PostType!
 }
 
 input RegisterInput {
@@ -40,4 +48,15 @@ input RegisterInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input CreatePostInput {
+  title: String!
+  content: String!
+}
+
+input UpdatePostInput {
+  postId: Int!
+  title: String
+  content: String
 }

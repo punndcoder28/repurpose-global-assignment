@@ -30,12 +30,14 @@ const router = createRouter({
 })
 
 // Navigation guards
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
   // Initialize auth state on first navigation
   if (!authStore.token && !authStore.user) {
     authStore.initializeAuth()
+    // Give a tiny delay to ensure localStorage is read properly
+    await new Promise((resolve) => setTimeout(resolve, 0))
   }
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
